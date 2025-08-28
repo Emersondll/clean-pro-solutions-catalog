@@ -1,12 +1,11 @@
-
----
-
-```markdown
 # 🧹 Service Catalog Service
 
 Este microserviço faz parte do **Clean Pro Solutions** e é responsável por gerenciar os **serviços de catálogo** oferecidos (residenciais, comerciais, pós-obra, etc).
 
 Ele expõe uma API REST para **criação, atualização, listagem e exclusão** de serviços no MongoDB.
+
+---
+
 
 ---
 
@@ -21,13 +20,12 @@ Ele expõe uma API REST para **criação, atualização, listagem e exclusão** 
 - **Maven**
 
 ---
-
+## 📖 Endpoints da API
 
 ````
 
 ---
 
-## 📖 Endpoints da API
 
 ### 🔹 Criar Serviço
 **POST** `/v1/api/services`
