@@ -6,6 +6,105 @@ Análise o projeto e gere um plano de refatoração.
 
 ---
 
+## 🔄 FLUXO DE EXECUÇÃO (OBRIGATÓRIO)
+
+Seguir estritamente a ordem:
+
+1. Leitura inicial do projeto
+2. Geração de plano detalhado
+3. Validação do plano
+4. Execução por arquivo/módulo
+5. Execução de testes
+6. Revisão das mudanças
+7. Iteração recursiva
+
+NUNCA pular etapas.
+---
+
+## 📏 CONTROLE DE ESCOPO
+
+- Alterar no máximo 5 arquivos por ciclo
+- Alterações devem ser pequenas e incrementais
+- Sempre priorizar arquivos mais críticos primeiro
+- Nunca refatorar o projeto inteiro de uma vez
+
+---
+## 🧪 EXECUÇÃO DE VALIDAÇÃO
+
+Após cada alteração:
+
+- Executar build:
+  - Maven: mvn clean install
+  - Gradle: ./gradlew build
+
+- Executar testes
+
+Se falhar:
+- Corrigir imediatamente
+- NÃO prosseguir até sucesso
+
+---
+## 🏗️ PADRÃO ARQUITETURAL
+
+Sempre que possível aplicar:
+
+- Separação em camadas:
+  - Controller
+  - Service
+  - Repository
+
+- Uso de DTOs para entrada/saída
+- Evitar lógica em controllers
+- Services devem conter regras de negócio
+
+---
+## 📊 LOGGING E OBSERVABILIDADE
+
+- Utilizar SLF4J
+- NÃO usar System.out
+- Logs devem conter contexto relevante
+- Evitar logs excessivos
+- Garantir logs em erros críticos
+
+---
+## 🔐 SEGURANÇA
+
+- Nunca expor dados sensíveis
+- Validar inputs
+- Evitar SQL Injection
+- Sanitizar entradas externas
+
+---
+## 📦 DEPENDÊNCIAS
+
+- NÃO adicionar dependências sem necessidade clara
+- Preferir soluções nativas
+- Se adicionar, justificar
+
+---
+## 🛑 FAIL-SAFE
+
+Se identificar:
+
+- múltiplos erros
+- falha de build persistente
+- inconsistência estrutural
+
+DEVE:
+- parar execução
+- reportar problemas
+- solicitar intervenção
+
+## 🎯 PRIORIZAÇÃO
+
+Priorizar sempre:
+
+1. Problemas que quebram build/testes
+2. Bugs potenciais
+3. Code smells críticos
+4. Legibilidade
+5. Otimizações
+
 ## ⚙️ PRINCÍPIOS GERAIS
 
 - NÃO alterar comportamento funcional existente
