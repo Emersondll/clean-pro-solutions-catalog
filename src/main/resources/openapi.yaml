@@ -1,0 +1,403 @@
+openapi: 3.0.3
+info:
+  title: Clean Pro Solutions - Catalog Service API
+  description: |
+    Microsserviço REST para gerenciamento do catálogo de serviços da Clean Pro Solutions.
+
+    ## Visão Geral
+    Este serviço é responsável por gerenciar os serviços oferecidos pela empresa,
+    incluindo limpeza residencial, comercial, pós-obra e limpeza profunda.
+
+    ## Autenticação
+    Esta API não requer autenticação no momento. Em versões futuras, será integrado
+    ao sistema de autenticação da Clean Pro Solutions.
+
+    ## Convenções
+    - Todas as datas estão no formato ISO 8601
+    - Valores monetários estão em BRL (Real Brasileiro)
+    - Durações são expressas em horas inteiras
+  version: 1.0.0
+  contact:
+    name: Emerson DLL
+    url: https://github.com/emersondll
+    email: emerson@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desenvolvimento local
+  - url: http://localhost:27017
+    description: Servidor de produção (MongoDB)
+
+tags:
+  - name: Serviços
+    description: Operações relacionadas ao catálogo de serviços
+
+paths:
+  /v1/api/services:
+    get:
+      tags:
+        - Serviços
+      summary: Listar todos os serviços
+      description: Retorna uma lista com todos os serviços cadastrados no catálogo.
+      operationId: findAllServices
+      responses:
+        '200':
+          description: Lista de serviços recuperada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceResponse'
+              example:
+                - id: "64cbb1f2a4c1c2b8e2d7f0a9"
+                  name: "Limpeza Residencial"
+                  description: "Serviço completo de limpeza em residências"
+                  basePrice: 200.00
+                  durationInHours: 4
+                  type: "RESIDENTIAL"
+                - id: "64cbb23da4c1c2b8e2d7f0b0"
+                  name: "Limpeza Comercial"
+                  description: "Limpeza recorrente de escritórios e comércios"
+                  basePrice: 350.00
+                  durationInHours: 6
+                  type: "COMMERCIAL"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Serviços
+      summary: Criar um novo serviço
+      description: |
+        Cria um novo serviço no catálogo com os dados fornecidos.
+
+        **Regras de validação:**
+        - O nome deve ter entre 3 e 100 caracteres
+        - A descrição é obrigatória e máximo 500 caracteres
+        - O preço base deve ser maior que zero
+        - A duração deve ser entre 1 e 24 horas
+        - O tipo é obrigatório
+      operationId: createService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+            example:
+              name: "Limpeza Residencial"
+              description: "Serviço completo de limpeza em residências"
+              basePrice: 200.00
+              durationInHours: 4
+              type: "RESIDENTIAL"
+      responses:
+        '201':
+          description: Serviço criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              example:
+                id: "64cbb1f2a4c1c2b8e2d7f0a9"
+                name: "Limpeza Residencial"
+                description: "Serviço completo de limpeza em residências"
+                basePrice: 200.00
+                durationInHours: 4
+                type: "RESIDENTIAL"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/api/services/{id}:
+    get:
+      tags:
+        - Serviços
+      summary: Buscar serviço por ID
+      description: Retorna os detalhes de um serviço específico pelo seu identificador.
+      operationId: findServiceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único do serviço (MongoDB ObjectId)
+          schema:
+            type: string
+            example: "64cbb1f2a4c1c2b8e2d7f0a9"
+      responses:
+        '200':
+          description: Serviço encontrado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              example:
+                id: "64cbb1f2a4c1c2b8e2d7f0a9"
+                name: "Limpeza Residencial"
+                description: "Serviço completo de limpeza em residências"
+                basePrice: 200.00
+                durationInHours: 4
+                type: "RESIDENTIAL"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Serviços
+      summary: Atualizar serviço existente
+      description: |
+        Atualiza todos os dados de um serviço existente identificado pelo ID.
+
+        **Regras de validação:**
+        - Todos os campos são obrigatórios
+        - O nome deve ter entre 3 e 100 caracteres
+        - A descrição máximo 500 caracteres
+        - O preço base deve ser maior que zero
+        - A duração deve ser entre 1 e 24 horas
+      operationId: updateService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único do serviço (MongoDB ObjectId)
+          schema:
+            type: string
+            example: "64cbb1f2a4c1c2b8e2d7f0a9"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+            example:
+              name: "Limpeza Pós-Obra"
+              description: "Limpeza pesada após construção ou reforma"
+              basePrice: 500.00
+              durationInHours: 8
+              type: "POST_CONSTRUCTION"
+      responses:
+        '200':
+          description: Serviço atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+              example:
+                id: "64cbb1f2a4c1c2b8e2d7f0a9"
+                name: "Limpeza Pós-Obra"
+                description: "Limpeza pesada após construção ou reforma"
+                basePrice: 500.00
+                durationInHours: 8
+                type: "POST_CONSTRUCTION"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Serviços
+      summary: Remover serviço
+      description: Remove um serviço do catálogo pelo seu identificador.
+      operationId: deleteService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador único do serviço (MongoDB ObjectId)
+          schema:
+            type: string
+            example: "64cbb1f2a4c1c2b8e2d7f0a9"
+      responses:
+        '204':
+          description: Serviço removido com sucesso
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    ServiceType:
+      type: string
+      description: Tipo de serviço oferecido
+      enum:
+        - RESIDENTIAL
+        - COMMERCIAL
+        - POST_CONSTRUCTION
+        - DEEP_CLEANING
+      example: "RESIDENTIAL"
+
+    ServiceRequest:
+      type: object
+      required:
+        - name
+        - description
+        - basePrice
+        - durationInHours
+        - type
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 100
+          description: Nome do serviço
+          example: "Limpeza Residencial"
+        description:
+          type: string
+          maxLength: 500
+          description: Descrição detalhada do serviço
+          example: "Serviço completo de limpeza em residências com produtos biodegradáveis"
+        basePrice:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Preço base do serviço em reais (BRL)
+          example: 200.00
+        durationInHours:
+          type: integer
+          minimum: 1
+          maximum: 24
+          description: Duração estimada do serviço em horas
+          example: 4
+        type:
+          $ref: '#/components/schemas/ServiceType'
+      description: Dados de entrada para criação ou atualização de serviço
+      example:
+        name: "Limpeza Residencial"
+        description: "Serviço completo de limpeza em residências"
+        basePrice: 200.00
+        durationInHours: 4
+        type: "RESIDENTIAL"
+
+    ServiceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador único do serviço (MongoDB ObjectId)
+          example: "64cbb1f2a4c1c2b8e2d7f0a9"
+        name:
+          type: string
+          description: Nome do serviço
+          example: "Limpeza Residencial"
+        description:
+          type: string
+          description: Descrição detalhada do serviço
+          example: "Serviço completo de limpeza em residências"
+        basePrice:
+          type: number
+          format: decimal
+          description: Preço base do serviço em reais (BRL)
+          example: 200.00
+        durationInHours:
+          type: integer
+          description: Duração estimada do serviço em horas
+          example: 4
+        type:
+          $ref: '#/components/schemas/ServiceType'
+      description: Dados de resposta de um serviço
+      example:
+        id: "64cbb1f2a4c1c2b8e2d7f0a9"
+        name: "Limpeza Residencial"
+        description: "Serviço completo de limpeza em residências"
+        basePrice: 200.00
+        durationInHours: 4
+        type: "RESIDENTIAL"
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: Código HTTP do erro
+          example: 404
+        error:
+          type: string
+          description: Tipo do erro
+          example: "Recurso não encontrado"
+        message:
+          oneOf:
+            - type: string
+              description: Mensagem de erro simples
+              example: "Serviço não encontrado com ID: 64cbb1f2a4c1c2b8e2d7f0a9"
+            - type: object
+              description: Mapa de erros de validação (quando aplicável)
+              additionalProperties:
+                type: string
+              example:
+                name: "O nome do serviço é obrigatório"
+                basePrice: "O preço base deve ser maior que zero"
+        timestamp:
+          type: string
+          format: date-time
+          description: Data e hora em que o erro ocorreu
+          example: "2026-04-10T00:11:55"
+      description: Estrutura padrão de resposta de erro
+
+  responses:
+    BadRequest:
+      description: Erro de validação nos dados da requisição
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            validacao_campos:
+              summary: Erro de validação de campos
+              value:
+                status: 400
+                error: "Erro de validação"
+                message:
+                  name: "O nome do serviço é obrigatório"
+                  basePrice: "O preço base deve ser maior que zero"
+                timestamp: "2026-04-10T00:11:55"
+            violacao_restricao:
+              summary: Violação de restrição
+              value:
+                status: 400
+                error: "Violação de restrição"
+                message: "durationInHours: A duração deve ser de pelo menos 1 hora"
+                timestamp: "2026-04-10T00:11:55"
+
+    NotFound:
+      description: Recurso não encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 404
+            error: "Recurso não encontrado"
+            message: "Serviço não encontrado com ID: 64cbb1f2a4c1c2b8e2d7f0a9"
+            timestamp: "2026-04-10T00:11:55"
+
+    InternalServerError:
+      description: Erro interno do servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 500
+            error: "Erro interno do servidor"
+            message: "Ocorreu um erro interno. Por favor, tente novamente mais tarde."
+            timestamp: "2026-04-10T00:11:55"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT de autenticação (reservado para futuras implementações)
+
+security:
+  - bearerAuth: []
