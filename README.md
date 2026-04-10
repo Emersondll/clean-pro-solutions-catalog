@@ -52,6 +52,7 @@ O serviço é projetado para integrar-se futuramente com:
 | Lombok | - | Redução de boilerplate |
 | Maven | 3.x | Gerenciamento de dependências |
 | Docker | 24.x | Containerização |
+| Docker Compose | - | Orquestração de containers |
 | MongoDB | 6.0 | Banco de dados |
 
 ---
@@ -103,13 +104,12 @@ O projeto suporta dois profiles:
 ### Usando Docker
 
 ```bash
-# Subir o MongoDB
+# Subir todos os serviços (MongoDB + Aplicação)
 cd docker
-docker-compose up -d mongo
+docker-compose up -d
 
-# Executar a aplicação
-docker build -t catalog-service .
-docker run -p 8080:8080 --env-file .env catalog-service
+# Ou subir apenas o MongoDB para desenvolvimento local
+docker-compose up -d mongodb
 ```
 
 ### Usando JAR
@@ -117,6 +117,17 @@ docker run -p 8080:8080 --env-file .env catalog-service
 ```bash
 java -jar target/clean-pro-solutions-catalog-1.0.0.jar
 ```
+
+### Usando Docker Compose (ambiente completo)
+
+```bash
+cd docker
+docker-compose up -d
+```
+
+Isso sobe automaticamente:
+- **MongoDB** na porta 27017
+- **Catalog Service** na porta 8080
 
 ---
 

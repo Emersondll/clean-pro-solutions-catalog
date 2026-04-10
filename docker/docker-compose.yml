@@ -1,15 +1,42 @@
 version: "3.9"
 
 services:
-  mongo:
+  mongodb:
     image: mongo:6.0
-    container_name: mongo
+    container_name: catalog-mongodb
     restart: always
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_DATABASE: catalogdb
+      MONGO_INITDB_DATABASE: catalog_service_dev
     volumes:
-      - mongo_data:/data/db
+      - mongodb_data:/data/db
+    networks:
+      - catalog-network
+
+  catalog-service:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: catalog-service
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DATABASE: catalog_service_dev
+      SERVER_PORT: 8080
+    depends_on:
+      - mongodb
+    networks:
+      - catalog-network
+
 volumes:
-  mongo_data:
+  mongodb_data:
+    driver: local
+
+networks:
+  catalog-network:
+    driver: bridge
