@@ -1,6 +1,21 @@
 spring:
   application:
     name: catalog-service
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    doc-expansion: none
+  override-with-generic-response: false
 
 ---
 spring:
@@ -12,6 +27,7 @@ spring:
       host: localhost
       port: 27017
       database: catalog_service_dev
+      auto-index-creation: true
 
 ---
 spring:
@@ -23,3 +39,4 @@ spring:
       host: mongo
       port: 27017
       database: catalog_service_prod
+      auto-index-creation: true
