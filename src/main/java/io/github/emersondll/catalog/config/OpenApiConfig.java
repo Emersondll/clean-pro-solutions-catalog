@@ -67,16 +67,16 @@ public class OpenApiConfig {
         info.setContact(contact);
         info.setLicense(license);
 
-        final Server devServer = new Server();
-        devServer.setUrl("http://localhost:8080");
-        devServer.setDescription("Servidor de desenvolvimento local");
+        final Server developmentServer = new Server();
+        developmentServer.setUrl("http://localhost:8080");
+        developmentServer.setDescription("Servidor de desenvolvimento local");
 
-        final Server prodServer = new Server();
-        prodServer.setUrl("http://mongo:27017");
-        prodServer.setDescription("Servidor de produção");
+        final Server productionServer = new Server();
+        productionServer.setUrl("http://localhost:27017");
+        productionServer.setDescription("Servidor de produção");
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer, prodServer));
+                .servers(List.of(developmentServer, productionServer));
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
  * Implementação do serviço de catálogo de serviços.
  *
  * <p>Segue o padrão Service Layer do DDD, coordenando operações de negócio
- * e aplicando as regras devalidação. Utiliza injeção de dependências via
+ * e aplicando as regras de validação. Utiliza injeção de dependências via
  * construtor (Constructor Injection) para garantir immutabilidade e testabilidade.</p>
  *
  * <p>Princípios SOLID aplicados:</p>
@@ -33,6 +33,8 @@ import java.util.List;
 @Service
 public class ServiceServiceImpl implements ServiceService {
 
+    private static final String SERVICE_NOT_FOUND_MESSAGE = "Serviço não encontrado com ID: ";
+
     private final ServiceRepository repository;
 
     /**
@@ -50,39 +52,31 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public ServiceResponse create(final ServiceRequest request) {
         final ServiceDocument document = toDocument(request);
-        final ServiceDocument saved = repository.save(document);
-        return toResponse(saved);
+        final ServiceDocument savedDocument = repository.save(document);
+        return toResponse(savedDocument);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ServiceResponse update(final String id, final ServiceRequest request) {
-        final ServiceDocument existing = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado com ID: " + id));
+    public ServiceResponse update(final String serviceId, final ServiceRequest request) {
+        final ServiceDocument existingService = repository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException(SERVICE_NOT_FOUND_MESSAGE + serviceId));
 
-        final ServiceDocument updated = ServiceDocument.builder()
-                .id(existing.id())
-                .name(request.name())
-                .description(request.description())
-                .basePrice(request.basePrice())
-                .durationInHours(request.durationInHours())
-                .type(request.type())
-                .build();
-
-        final ServiceDocument saved = repository.save(updated);
-        return toResponse(saved);
+        final ServiceDocument updatedService = buildUpdatedService(existingService, request);
+        final ServiceDocument savedDocument = repository.save(updatedService);
+        return toResponse(savedDocument);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ServiceResponse findById(final String id) {
-        return repository.findById(id)
+    public ServiceResponse findById(final String serviceId) {
+        return repository.findById(serviceId)
                 .map(this::toResponse)
-                .orElseThrow(() -> new NotFoundException("Serviço não encontrado com ID: " + id));
+                .orElseThrow(() -> new NotFoundException(SERVICE_NOT_FOUND_MESSAGE + serviceId));
     }
 
     /**
@@ -100,11 +94,10 @@ public class ServiceServiceImpl implements ServiceService {
      * {@inheritDoc}
      */
     @Override
-    public void delete(final String id) {
-        if (!repository.existsById(id)) {
-            throw new NotFoundException("Serviço não encontrado com ID: " + id);
-        }
-        repository.deleteById(id);
+    public void delete(final String serviceId) {
+        final ServiceDocument existingService = repository.findById(serviceId)
+                .orElseThrow(() -> new NotFoundException(SERVICE_NOT_FOUND_MESSAGE + serviceId));
+        repository.deleteById(existingService.id());
     }
 
     /**
@@ -138,5 +131,25 @@ public class ServiceServiceImpl implements ServiceService {
                 document.durationInHours(),
                 document.type()
         );
+    }
+
+    /**
+     * Constrói um documento atualizado a partir do existente, aplicando os novos valores do request.
+     *
+     * @param existingService documento existente a ser atualizado
+     * @param request         DTO com os novos valores
+     * @return novo documento com valores atualizados
+     */
+    private ServiceDocument buildUpdatedService(
+            final ServiceDocument existingService,
+            final ServiceRequest request) {
+        return ServiceDocument.builder()
+                .id(existingService.id())
+                .name(request.name())
+                .description(request.description())
+                .basePrice(request.basePrice())
+                .durationInHours(request.durationInHours())
+                .type(request.type())
+                .build();
     }
 }

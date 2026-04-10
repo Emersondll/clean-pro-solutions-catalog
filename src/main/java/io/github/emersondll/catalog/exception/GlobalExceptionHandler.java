@@ -26,10 +26,12 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Mensagem padrão para erros internos não especificados.
-     */
+    private static final String NOT_FOUND_ERROR = "Recurso não encontrado";
+    private static final String VALIDATION_ERROR = "Erro de validação";
+    private static final String CONSTRAINT_VIOLATION_ERROR = "Violação de restrição";
+    private static final String INTERNAL_ERROR = "Erro interno do servidor";
     private static final String UNEXPECTED_ERROR_MESSAGE = "Ocorreu um erro interno. Por favor, tente novamente mais tarde.";
+    private static final String DEFAULT_FIELD_ERROR_MESSAGE = "Valor inválido";
 
     /**
      * Trata exceções de recurso não encontrado.
@@ -38,79 +40,79 @@ public class GlobalExceptionHandler {
      * @return resposta HTTP 404 com mensagem de erro
      */
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(final NotFoundException ex) {
-        final ErrorResponse error = new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleNotFound(final NotFoundException exception) {
+        final ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
-                "Recurso não encontrado",
-                ex.getMessage(),
+                NOT_FOUND_ERROR,
+                exception.getMessage(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     /**
      * Trata exceções de validação de campos em requisições (@Valid).
      *
-     * @param ex exceção lançada quando a validação falha
+     * @param exception exceção lançada quando a validação falha
      * @return resposta HTTP 400 com detalhes dos campos inválidos
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationErrors(final MethodArgumentNotValidException ex) {
-        final Map<String, String> fieldErrors = ex.getBindingResult()
+    public ResponseEntity<ErrorResponse> handleValidationErrors(final MethodArgumentNotValidException exception) {
+        final Map<String, String> validationErrors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .collect(Collectors.toMap(
                         FieldError::getField,
-                        error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Valor inválido",
-                        (existing, replacement) -> existing
+                        error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : DEFAULT_FIELD_ERROR_MESSAGE,
+                        (existingError, replacementError) -> existingError
                 ));
 
-        final ErrorResponse error = new ErrorResponse(
+        final ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Erro de validação",
-                fieldErrors,
+                VALIDATION_ERROR,
+                validationErrors,
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**
      * Trata exceções de violação de restrições (ConstraintViolation).
      *
-     * @param ex exceção lançada quando uma restrição de validação é violada
+     * @param exception exceção lançada quando uma restrição de validação é violada
      * @return resposta HTTP 400 com mensagem de erro
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(final ConstraintViolationException ex) {
-        final String message = ex.getConstraintViolations()
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(final ConstraintViolationException exception) {
+        final String constraintViolationMessage = exception.getConstraintViolations()
                 .stream()
                 .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
                 .collect(Collectors.joining("; "));
 
-        final ErrorResponse error = new ErrorResponse(
+        final ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Violação de restrição",
-                message,
+                CONSTRAINT_VIOLATION_ERROR,
+                constraintViolationMessage,
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**
      * Trata exceções genéricas não especificadas.
      *
-     * @param ex exceção genérica
+     * @param exception exceção genérica
      * @return resposta HTTP 500 com mensagem genérica (sem detalhes técnicos)
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(final Exception ex) {
-        final ErrorResponse error = new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleGenericException(final Exception exception) {
+        final ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Erro interno do servidor",
+                INTERNAL_ERROR,
                 UNEXPECTED_ERROR_MESSAGE,
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     /**

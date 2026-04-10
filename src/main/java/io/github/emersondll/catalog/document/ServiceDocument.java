@@ -10,8 +10,11 @@ import java.util.Objects;
 /**
  * Entidade de documento que representa um serviço no MongoDB.
  *
- * <p>Esta classe utiliza o padrão Record para immutabilidade e o padrão Rich Domain Model.
+ * <p>Esta classe utiliza o padrão Rich Domain Model com objetos de valor imutáveis.
  * Implementa {@link Cloneable} para permitir operações de cópia defensiva.</p>
+ *
+ * <p>Nota: O método {@code equals} considera dois documentos iguais quando o {@code id} é igual.
+ * Isso segue o padrão de identidade de entidade onde o ID é o identificador único.</p>
  *
  * @author Emerson DLL
  * @since 1.0.0
@@ -97,10 +100,10 @@ public final class ServiceDocument implements Cloneable {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final ServiceDocument that = (ServiceDocument) o;
+    public boolean equals(final Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        final ServiceDocument that = (ServiceDocument) other;
         return Objects.equals(id, that.id);
     }
 

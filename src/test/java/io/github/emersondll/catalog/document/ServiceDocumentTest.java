@@ -106,7 +106,7 @@ class ServiceDocumentTest {
         @DisplayName("Documentos com mesmo ID devem ser iguais")
         void documentosComMesmoIdDevemSerIguais() {
             final ServiceDocument doc1 = new ServiceDocument(SERVICE_ID, NAME, DESCRIPTION, BASE_PRICE, DURATION, TYPE);
-            final ServiceDocument doc2 = new ServiceDocument(SERVICE_ID, "Outro Nome", "Outra Desc", new BigDecimal("100.00"), 2, ServiceType.COMMERCIAL);
+            final ServiceDocument doc2 = new ServiceDocument(SERVICE_ID, NAME, DESCRIPTION, BASE_PRICE, DURATION, TYPE);
 
             assertThat(doc1).isEqualTo(doc2);
             assertThat(doc1.hashCode()).isEqualTo(doc2.hashCode());
@@ -119,6 +119,16 @@ class ServiceDocumentTest {
             final ServiceDocument doc2 = new ServiceDocument("outro-id", NAME, DESCRIPTION, BASE_PRICE, DURATION, TYPE);
 
             assertThat(doc1).isNotEqualTo(doc2);
+        }
+
+        @Test
+        @DisplayName("Documentos com mesmo ID mas valores diferentes devem ser iguais")
+        void documentosComMesmoIdMasValoresDiferentesDevemSerIguais() {
+            final ServiceDocument doc1 = new ServiceDocument(SERVICE_ID, NAME, DESCRIPTION, BASE_PRICE, DURATION, TYPE);
+            final ServiceDocument doc2 = new ServiceDocument(SERVICE_ID, "Outro Nome", "Outra Desc", new BigDecimal("100.00"), 2, ServiceType.COMMERCIAL);
+
+            assertThat(doc1).isEqualTo(doc2);
+            assertThat(doc1.hashCode()).isEqualTo(doc2.hashCode());
         }
 
         @Test

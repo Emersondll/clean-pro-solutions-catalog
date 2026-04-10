@@ -255,12 +255,12 @@ class ServiceServiceImplTest {
         @Test
         @DisplayName("Deve deletar serviço quando existe")
         void delete_ComIdExistente_NaoLancaExcecao() {
-            when(repository.existsById(SERVICE_ID)).thenReturn(true);
+            when(repository.findById(SERVICE_ID)).thenReturn(Optional.of(serviceDocument));
             doNothing().when(repository).deleteById(SERVICE_ID);
 
             service.delete(SERVICE_ID);
 
-            verify(repository, times(1)).existsById(SERVICE_ID);
+            verify(repository, times(1)).findById(SERVICE_ID);
             verify(repository, times(1)).deleteById(SERVICE_ID);
         }
 
@@ -268,13 +268,13 @@ class ServiceServiceImplTest {
         @DisplayName("Deve lançar NotFoundException quando deletar serviço inexistente")
         void delete_ComIdInexistente_LancaExcecao() {
             final String nonExistentId = "nonexistent";
-            when(repository.existsById(nonExistentId)).thenReturn(false);
+            when(repository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> service.delete(nonExistentId))
                     .isInstanceOf(NotFoundException.class)
                     .hasMessageContaining("Serviço não encontrado com ID: " + nonExistentId);
 
-            verify(repository, times(1)).existsById(nonExistentId);
+            verify(repository, times(1)).findById(nonExistentId);
             verify(repository, never()).deleteById(any());
         }
     }
