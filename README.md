@@ -327,7 +327,7 @@ Este projeto está licenciado sob a licença **Apache 2.0** - veja o arquivo [LI
 **Emerson DLL**
 
 - GitHub: [@emersondll](https://github.com/emersondll)
-- LinkedIn: [Emerson DLL](https://linkedin.com/in/emersondll)
+- LinkedIn: [Stack Developer](https://www.linkedin.com/in/stackdeveloper/)
 
 ---
 
