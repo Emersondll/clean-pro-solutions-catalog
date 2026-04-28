@@ -1,42 +1,48 @@
 version: "3.9"
 
 services:
-  mongodb:
-    image: mongo:6.0
-    container_name: catalog-mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_DATABASE: catalog_service_dev
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - catalog-network
-
   catalog-service:
     build:
       context: ..
       dockerfile: Dockerfile
     container_name: catalog-service
-    restart: always
     ports:
-      - "8080:8080"
+      - "8083:8083"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      MONGO_HOST: mongodb
-      MONGO_PORT: 27017
-      MONGO_DATABASE: catalog_service_dev
-      SERVER_PORT: 8080
+      MONGO_URI: mongodb://mongo:27017/catalog_db
+      EUREKA_SERVER_URL: http://host.docker.internal:8761/eureka
+      EUREKA_ENABLED: "true"
+      SERVER_PORT: 8083
     depends_on:
-      - mongodb
+      mongo:
+        condition: service_healthy
     networks:
-      - catalog-network
+      - catalog-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  mongo:
+    image: mongo:7.0
+    container_name: catalog-mongo
+    ports:
+      - "27020:27017"
+    volumes:
+      - catalog-mongo-data:/data/db
+    networks:
+      - catalog-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  mongodb_data:
-    driver: local
+  catalog-mongo-data:
 
 networks:
-  catalog-network:
+  catalog-net:
     driver: bridge
