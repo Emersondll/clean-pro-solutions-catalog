@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: catalog-mongo
+    ports:
+      - "27019:27017"
+    networks:
+      - catalog-net
+
+  service-registry:
+    build:
+      context: ../clean-pro-solutions-service-registry
+      dockerfile: Dockerfile
+    container_name: catalog-registry
+    ports:
+      - "8763:8761"
+    networks:
+      - catalog-net
+
+  catalog-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: catalog-service
+    ports:
+      - "8083:8083"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/catalog_db
+      EUREKA_SERVER_URL: http://service-registry:8761/eureka
+    depends_on:
+      - mongo
+      - service-registry
+    networks:
+      - catalog-net
+
+networks:
+  catalog-net:
+    driver: bridge
