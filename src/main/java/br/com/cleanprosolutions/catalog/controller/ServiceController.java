@@ -88,6 +88,15 @@ public class ServiceController {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Full-text search across service name and description")
+    @ApiResponse(responseCode = "200", description = "Search results returned")
+    public ResponseEntity<List<ServiceResponse>> search(
+            @org.springframework.web.bind.annotation.RequestParam final String query) {
+        log.info("GET /services/search — query: '{}'", query);
+        return ResponseEntity.ok(service.search(query));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a service from the catalog")
     public ResponseEntity<Void> delete(@PathVariable final String id) {

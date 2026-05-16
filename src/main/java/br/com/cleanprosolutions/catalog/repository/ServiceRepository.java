@@ -4,6 +4,7 @@ import br.com.cleanprosolutions.catalog.document.ServiceDocument;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceCategory;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceType;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,4 +42,16 @@ public interface ServiceRepository extends MongoRepository<ServiceDocument, Stri
      * @return list of active services in the given category
      */
     List<ServiceDocument> findByActiveTrueAndCategory(ServiceCategory category);
+
+    /**
+     * Full-text search across service name and description using the MongoDB {@code $text} operator.
+     *
+     * <p>Requires the {@code @TextIndexed} fields to be indexed in MongoDB.
+     * The index is created automatically by Spring Data on startup.</p>
+     *
+     * @param query the search term(s)
+     * @return active services matching the text query
+     */
+    @Query("{ '$text': { '$search': ?0 }, 'active': true }")
+    List<ServiceDocument> searchByText(String query);
 }

@@ -76,4 +76,12 @@ public interface ServiceService {
      * @param id service MongoDB ID
      */
     void delete(String id);
+
+    /**
+     * Searches active services by name or description using full-text search.
+     *
+     * @param query the search term(s)
+     * @return matching active services
+     */
+    List<ServiceResponse> search(String query);
 }

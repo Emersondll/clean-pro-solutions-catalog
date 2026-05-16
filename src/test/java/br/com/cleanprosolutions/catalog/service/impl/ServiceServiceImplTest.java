@@ -7,6 +7,7 @@ import br.com.cleanprosolutions.catalog.dto.ServiceResponse;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceCategory;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceType;
 import br.com.cleanprosolutions.catalog.exception.ServiceNotFoundException;
+import br.com.cleanprosolutions.catalog.mapper.ServiceMapper;
 import br.com.cleanprosolutions.catalog.repository.ServiceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -38,6 +40,9 @@ class ServiceServiceImplTest {
 
     @Mock
     private ServiceRepository repository;
+
+    @Spy
+    private ServiceMapper mapper = new ServiceMapper();
 
     @InjectMocks
     private ServiceServiceImpl service;
@@ -114,6 +119,15 @@ class ServiceServiceImplTest {
     }
 
     @Test
+    @DisplayName("shouldThrowExceptionWhenServiceNotFound")
+    void shouldThrowExceptionWhenServiceNotFound() {
+        when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.findById("missing-id"))
+                .isInstanceOf(ServiceNotFoundException.class);
+    }
+
+    @Test
     @DisplayName("shouldFindAllServices")
     void shouldFindAllServices() {
         when(repository.findAll()).thenReturn(List.of(document));
@@ -121,6 +135,7 @@ class ServiceServiceImplTest {
         final List<ServiceResponse> result = service.findAll();
 
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).name()).isEqualTo("Limpeza Geral");
     }
 
     @Test
@@ -131,6 +146,7 @@ class ServiceServiceImplTest {
         final List<ServiceResponse> result = service.findAllActive();
 
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).active()).isTrue();
     }
 
     @Test
@@ -141,6 +157,7 @@ class ServiceServiceImplTest {
         final List<ServiceResponse> result = service.findByType(ServiceType.RESIDENTIAL);
 
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).type()).isEqualTo(ServiceType.RESIDENTIAL);
     }
 
     @Test
@@ -151,6 +168,7 @@ class ServiceServiceImplTest {
         final List<ServiceResponse> result = service.findByCategory(ServiceCategory.CLEANING);
 
         assertThat(result).hasSize(1);
+        assertThat(result.get(0).category()).isEqualTo(ServiceCategory.CLEANING);
     }
 
     @Test
@@ -161,5 +179,14 @@ class ServiceServiceImplTest {
         service.delete("doc-123");
 
         verify(repository).deleteById("doc-123");
+    }
+
+    @Test
+    @DisplayName("shouldThrowExceptionWhenDeletingNonExistentService")
+    void shouldThrowExceptionWhenDeletingNonExistentService() {
+        when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.delete("missing-id"))
+                .isInstanceOf(ServiceNotFoundException.class);
     }
 }

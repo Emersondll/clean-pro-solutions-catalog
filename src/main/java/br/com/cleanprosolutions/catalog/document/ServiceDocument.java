@@ -4,6 +4,7 @@ import br.com.cleanprosolutions.catalog.dto.PriceRange;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceCategory;
 import br.com.cleanprosolutions.catalog.enumerations.ServiceType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -24,7 +25,11 @@ public final class ServiceDocument implements Cloneable {
 
     @Id
     private final String id;
+
+    @TextIndexed(weight = 2)
     private final String name;
+
+    @TextIndexed
     private final String description;
     private final BigDecimal basePrice;
     private final Integer durationInHours;
