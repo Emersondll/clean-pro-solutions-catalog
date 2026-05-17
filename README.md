@@ -167,3 +167,7 @@ clean-pro-solutions-catalog/
 ├── src/test/
 └── pom.xml
 ```
+
+---
+
+© 2026 Clean Pro Solutions — Developed by **Emerson Lima**

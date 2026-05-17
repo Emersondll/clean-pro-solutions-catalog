@@ -25,7 +25,7 @@ import java.math.BigDecimal;
  * @param category            service category
  * @param estimatedPriceRange optional price range for dynamic display
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record ServiceRequest(

@@ -17,7 +17,7 @@ import java.util.Objects;
  * Includes category classification, estimated price range, and active status
  * to support dynamic pricing and service filtering.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Document(collection = "services")

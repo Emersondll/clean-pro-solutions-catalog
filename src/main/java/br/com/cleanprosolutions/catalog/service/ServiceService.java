@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Service contract for catalog management operations.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public interface ServiceService {

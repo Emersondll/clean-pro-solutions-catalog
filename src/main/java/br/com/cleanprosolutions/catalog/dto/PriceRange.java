@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @param minPrice minimum estimated price (inclusive)
  * @param maxPrice maximum estimated price (inclusive)
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record PriceRange(

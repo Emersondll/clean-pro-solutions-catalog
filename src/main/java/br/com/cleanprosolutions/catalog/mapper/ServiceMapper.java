@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * Maps between {@link ServiceRequest}, {@link ServiceDocument}, and {@link ServiceResponse}.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Component

@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>Extends {@link MongoRepository} with custom finders for catalog filtering.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Repository

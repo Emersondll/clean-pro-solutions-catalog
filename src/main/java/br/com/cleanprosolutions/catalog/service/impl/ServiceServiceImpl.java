@@ -21,7 +21,7 @@ import java.util.List;
  * <p>Handles catalog service management following SOLID principles.
  * Mapping responsibilities are delegated to {@link ServiceMapper}.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Slf4j

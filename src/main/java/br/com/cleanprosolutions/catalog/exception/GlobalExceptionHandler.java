@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  *
  * <p>Formats exceptions as RFC 7807 Problem Details.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 @Slf4j

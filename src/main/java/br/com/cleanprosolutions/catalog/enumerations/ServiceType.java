@@ -3,7 +3,7 @@ package br.com.cleanprosolutions.catalog.enumerations;
 /**
  * Enum representing the service types offered by Clean Pro Solutions.
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public enum ServiceType {

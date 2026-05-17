@@ -10,7 +10,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * <p>Manages the service catalog for Clean Pro Solutions,
  * exposing a REST API for CRUD operations and service discovery via Eureka.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @version 1.0.0
  * @since 1.0.0
  */

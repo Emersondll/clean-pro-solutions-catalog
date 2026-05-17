@@ -5,7 +5,7 @@ package br.com.cleanprosolutions.catalog.enumerations;
  *
  * <p>Used for filtering and grouping services by their domain category.</p>
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public enum ServiceCategory {

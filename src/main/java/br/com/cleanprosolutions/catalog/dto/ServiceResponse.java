@@ -18,7 +18,7 @@ import java.math.BigDecimal;
  * @param estimatedPriceRange estimated price range
  * @param active              whether the service is active
  *
- * @author Clean Pro Solutions Team
+ * @author Emerson Lima
  * @since 1.0.0
  */
 public record ServiceResponse(
