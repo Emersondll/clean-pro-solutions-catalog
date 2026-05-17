@@ -88,4 +88,67 @@ class ServiceControllerTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).hasSize(1);
     }
+
+    @Test
+    @DisplayName("shouldFindServicesByType")
+    void shouldFindServicesByType() {
+        when(service.findByType(ServiceType.RESIDENTIAL)).thenReturn(List.of(response));
+
+        final ResponseEntity<List<ServiceResponse>> result = controller.findAll(null, ServiceType.RESIDENTIAL, null);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("shouldFindAllActiveServices")
+    void shouldFindAllActiveServices() {
+        when(service.findAllActive()).thenReturn(List.of(response));
+
+        final ResponseEntity<List<ServiceResponse>> result = controller.findAll(true, null, null);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("shouldFindServiceById")
+    void shouldFindServiceById() {
+        when(service.findById("doc-123")).thenReturn(response);
+
+        final ResponseEntity<ServiceResponse> result = controller.findById("doc-123");
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).isEqualTo(response);
+    }
+
+    @Test
+    @DisplayName("shouldUpdateService")
+    void shouldUpdateService() {
+        when(service.update(eq("doc-123"), any(ServiceRequest.class))).thenReturn(response);
+
+        final ResponseEntity<ServiceResponse> result = controller.update("doc-123", request);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    @DisplayName("shouldSearchServices")
+    void shouldSearchServices() {
+        when(service.search("limpeza")).thenReturn(List.of(response));
+
+        final ResponseEntity<List<ServiceResponse>> result = controller.search("limpeza");
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("shouldDeleteService")
+    void shouldDeleteService() {
+        final ResponseEntity<Void> result = controller.delete("doc-123");
+
+        verify(service).delete("doc-123");
+        assertThat(result.getStatusCode().value()).isEqualTo(204);
+    }
 }
